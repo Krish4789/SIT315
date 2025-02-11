@@ -1,0 +1,23 @@
+// Define pins
+const int motionSensorPin = 2;  // HC-SR505 digital output connected to pin 2
+const int ledPin = 13;          // Built-in LED pin
+
+void setup() {
+    pinMode(motionSensorPin, INPUT); // Set motion sensor pin as input
+    pinMode(ledPin, OUTPUT);         // Set LED pin as output
+    Serial.begin(9600);              // Start serial communication
+}
+
+void loop() {
+    int motionDetected = digitalRead(motionSensorPin); // Read sensor data
+    
+    if (motionDetected == HIGH) {
+        digitalWrite(ledPin, HIGH); // Turn on LED if motion detected
+        Serial.println("Motion detected! LED ON");
+    } else {
+        digitalWrite(ledPin, LOW);  // Turn off LED if no motion
+        Serial.println("No motion. LED OFF");
+    }
+    
+    delay(500); // Small delay for stability
+}
