@@ -1,0 +1,61 @@
+#define PIR_SENSOR_PIN 2       // Pin for PIR motion sensor
+#define TRIGGER_PIN 8          // Pin for ultrasonic sensor's trigger
+#define ECHO_PIN 9             // Pin for ultrasonic sensor's echo
+#define OUTPUT_LED_PIN 13       // Pin for LED
+
+void setup() {
+    initializePins();
+    Serial.begin(115200);
+}
+
+void loop() {
+    monitorMotion();
+    checkUltrasonicDistance();
+    delay(500); // Small delay for readability in serial output
+}
+
+void initializePins() {
+    pinMode(PIR_SENSOR_PIN, INPUT);
+    pinMode(TRIGGER_PIN, OUTPUT);
+    pinMode(ECHO_PIN, INPUT);
+    pinMode(OUTPUT_LED_PIN, OUTPUT);
+}
+
+void monitorMotion() {
+    if (digitalRead(PIR_SENSOR_PIN) == HIGH) {
+        Serial.println("Motion Detected!");
+    } else {
+        Serial.println("No Motion Detected");
+    }
+}
+
+void checkUltrasonicDistance() {
+    int distance = measureDistance();
+    if (distance > 0 && distance <= 50) { // Set object detection range to 100 cm
+        Serial.print("Object detected! Distance: ");
+        Serial.print(distance);
+        Serial.println(" cm");
+        activateLED();
+    }
+}
+
+int measureDistance() {
+    long duration;
+    digitalWrite(TRIGGER_PIN, LOW);
+    delayMicroseconds(2);
+    digitalWrite(TRIGGER_PIN, HIGH);
+    delayMicroseconds(10);
+    digitalWrite(TRIGGER_PIN, LOW);
+
+    duration = pulseIn(ECHO_PIN, HIGH);
+    return duration * 0.034 / 2; // Convert pulse duration to distance in cm
+}
+
+void activateLED() {
+    for (int i = 0; i < 2; i++) {
+        digitalWrite(OUTPUT_LED_PIN, HIGH);
+        delay(400);
+        digitalWrite(OUTPUT_LED_PIN, LOW);
+        delay(400);
+    }
+}
